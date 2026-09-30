@@ -29,17 +29,23 @@
   - git：`git revert <提交号>`（安全，生成反向提交）。`git reset --hard` 仅在确认不要最近提交时用。
 - **每次干活后**：AI 必须在 `docs/开发日志.md` 追加一条记录（日期、做了什么、下一步）。
 
-## 四、技术栈（待定）
+## 四、技术栈（已定 ✅ 2026-10-01）
 
-尚未选定。候选与建议（定了以后更新本节并写入 README）：
+**Cocos Creator 3.8.8 + TypeScript**，编辑器装在 `D:\DevTools\`（具体路径见 README 环境备忘）。
 
-| 方案 | 优点 | 缺点 |
-|---|---|---|
-| 网页版 HTML5 + JavaScript（推荐） | 朋友打开链接就能玩，最容易"被蹭"；不需要装任何东西 | 复杂表现力上限略低 |
-| Python + pygame | 机器上已有 Python，起步快 | 朋友要装环境才能玩 |
-| Godot / Unity | 表现力强、适合长大后的项目 | 学习曲线陡，导出体积大 |
+选型依据（用户需求：网页 / Windows exe / 手机 apk 三端都能玩）：
 
-选型原则：优先保证"朋友零门槛能玩到"。
+| 目标平台 | 发布方式 |
+|---|---|
+| 网页 | 编辑器内一键发布 Web |
+| Windows exe | 一键发布 Windows |
+| 手机 apk | 一键发布 Android（首次需装 JDK + Android SDK 到 D 盘，游戏成型后再弄） |
+| 加分项 | 微信小游戏（朋友在微信里直接玩） |
+
+约定：
+- 游戏逻辑用 **TypeScript** 写在 `assets/scripts/` 下；场景、预制体等资源改动在编辑器内完成
+- 版本锁定 3.8.x（不跨大版本升级，除非用户主动要求）
+- 不要把 `library/`、`temp/`、`local/`、`build/` 提交进 git（.gitignore 已配）
 
 ## 五、每次开发的固定流程（AI 按此执行）
 
@@ -61,4 +67,4 @@
 - [x] 用户把 git 身份改成自己的名字邮箱（已自动配置为 GitHub 身份：BTxiaoJun + noreply 邮箱）
 - [x] 创建 GitHub 远程仓库并推送（github.com/BTxiaoJun/gem-tower-defense）
 - [x] 创建 Gitee 远程仓库并推送（gitee.com/BTxiaoJun/gem-tower-defense）
-- [ ] 确定游戏技术栈，更新本文件第四节
+- [x] 确定游戏技术栈，更新本文件第四节（Cocos Creator 3.8.8 + TypeScript）

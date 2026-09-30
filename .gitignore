@@ -17,6 +17,11 @@ build/
 out/
 
 # ===== 游戏引擎（用到哪个留哪个） =====
+# Cocos Creator
+library/
+temp/
+local/
+build/
 # Godot
 .godot/
 # Unity
