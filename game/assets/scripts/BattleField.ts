@@ -1,10 +1,12 @@
 import { Color, Graphics, Label, Node } from 'cc';
 import { C, CFG, UnitDef } from './GameConfig';
+import { BattleSnapshot } from './SaveManager';
 import { fillRect, gOf, mkLabel, mkNode } from './UiUtil';
 
 interface Unit {
     node: Node;
     def: UnitDef;
+    defIdx: number;
     side: 1 | -1;   // 1 = 玩家，-1 = 敌方
     lane: 0 | 1;    // 0 = 上路，1 = 下路
     hp: number;
@@ -112,12 +114,16 @@ export class BattleField {
 
     /** 召唤一个单位。side 1=玩家 -1=敌方，idx=CFG.units 下标 */
     spawnUnit(side: 1 | -1, idx: number): void {
-        const def = CFG.units[idx];
         const lane = (side > 0
             ? (this.playerSummons++ % 2)
             : Math.floor(Math.random() * 2)) as 0 | 1;
         const y = this.laneYs[lane] + (Math.random() * 28 - 14);
         const x = side > 0 ? this.playerBaseX + 34 : this.enemyBaseX - 34;
+        this.createUnit(side, idx, lane, x, y, CFG.units[idx].hp, 0);
+    }
+
+    private createUnit(side: 1 | -1, defIdx: number, lane: 0 | 1, x: number, y: number, hp: number, rageT: number): void {
+        const def = CFG.units[defIdx];
         const n = mkNode(this.root, 'unit', def.r * 2, def.r * 2);
         n.setPosition(x, y, 0);
         const g = gOf(n);
@@ -131,9 +137,36 @@ export class BattleField {
         mkLabel(n, def.name, 11, new Color(20, 20, 20, 255)).node.setPosition(0, -def.r - 9, 0);
 
         this.units.push({
-            node: n, def, side, lane, hp: def.hp, maxHp: def.hp,
-            rageT: 0, alive: true,
+            node: n, def, defIdx, side, lane, hp, maxHp: def.hp,
+            rageT, alive: true,
         });
+    }
+
+    /** 存档：导出当前战场快照 */
+    snapshotBattle(energy: number): BattleSnapshot {
+        return {
+            energy,
+            aiEnergy: this.aiEnergy,
+            playerSummons: this.playerSummons,
+            bases: this.bases.filter((b) => b.alive).map((b) => ({ side: b.side, lane: b.lane, hp: b.hp })),
+            units: this.units.filter((u) => u.alive).map((u) => ({
+                defIdx: u.defIdx, side: u.side, lane: u.lane,
+                x: u.node.position.x, y: u.node.position.y, hp: u.hp, rageT: u.rageT,
+            })),
+        };
+    }
+
+    /** 读档：把快照还原成正在进行的战场 */
+    restoreBattle(s: BattleSnapshot): void {
+        this.aiEnergy = s.aiEnergy;
+        this.playerSummons = s.playerSummons;
+        for (const b of s.bases) {
+            const target = this.bases.find((x) => x.side === b.side && x.lane === b.lane);
+            if (target) target.hp = b.hp;
+        }
+        for (const u of s.units) {
+            this.createUnit(u.side, u.defIdx, u.lane, u.x, u.y, u.hp, u.rageT);
+        }
     }
 
     fireball(): void {

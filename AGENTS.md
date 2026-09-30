@@ -70,3 +70,15 @@
 - [x] 创建 GitHub 远程仓库并推送（github.com/BTxiaoJun/gem-tower-defense）
 - [x] 创建 Gitee 远程仓库并推送（gitee.com/BTxiaoJun/gem-tower-defense）
 - [x] 确定游戏技术栈，更新本文件第四节（Cocos Creator 3.8.8 + TypeScript）
+
+## 八、版本与构建规范（2026-10-01 定，用户要求）
+
+- **版本号** vX.Y.Z：
+  - `v0.0.x` 内测模板版（玩法验证，全色块占位）← 当前阶段
+  - `v0.1.x ~ v0.8.x` 内测版（正式 UI / 美术 / 怪物种类逐步替换，数值成型）
+  - `v0.9.x` 公测 Demo（内容完整，可对外试玩）
+  - `v1.0.0` 正式版（三端齐发）
+- **每次发布**：git tag `vX.Y.Z` + 开发日志记录改动 + 网页构建导出到 `builds/<版本号>/web/`
+- **构建产物不入 git**（builds/ 已忽略），源码 + tag 永久可回溯
+- **三端目标**：网页（命令行可自动构建）、Windows exe、Android apk（apk 需一次性安装 JDK+SDK 到 D 盘，游戏成型后配置）
+- **存档**：sys.localStorage 三端通用，战斗中每 5 秒 + 切后台/退出时自动保存，重开游戏自动续玩上一局；胜负计入总战绩

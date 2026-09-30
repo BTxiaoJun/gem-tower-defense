@@ -16,6 +16,7 @@ export class Hud {
     private skillBtns: Node[] = [];
     private resultRoot!: Node;
     private resultLabel!: Label;
+    private statsLabel!: Label;
     private cb: HudCallbacks;
     private energy = 0;
 
@@ -60,6 +61,8 @@ export class Hud {
         fillRect(gOf(this.resultRoot), W, H, new Color(10, 12, 18, 200), 0);
         this.resultRoot.addComponent(BlockInputEvents);
         this.resultLabel = mkLabel(this.resultRoot, '胜利！', 64, Color.WHITE);
+        this.statsLabel = mkLabel(this.resultRoot, '', 22, C('#cdd6e4'));
+        this.statsLabel.node.setPosition(0, -36, 0);
         const btn = mkButton(this.resultRoot, 180, 56, '再来一局', '#37517a');
         btn.setPosition(0, -110, 0);
         btn.on(Node.EventType.TOUCH_END, () => this.cb.onRestart());
@@ -85,9 +88,10 @@ export class Hud {
         btn.getComponent(UIOpacity)!.opacity = on ? 255 : 110;
     }
 
-    showResult(win: boolean): void {
+    showResult(win: boolean, stats: string): void {
         this.resultLabel.string = win ? '胜  利 ！' : '失  败 …';
         this.resultLabel.color = win ? C('#ffd85a') : C('#9aa4b5');
+        this.statsLabel.string = stats;
         this.resultRoot.active = true;
     }
 

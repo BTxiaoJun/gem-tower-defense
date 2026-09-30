@@ -1,9 +1,10 @@
-import { _decorator, Component, director, Node, UITransform } from 'cc';
-import { CFG } from './GameConfig';
+import { _decorator, Color, Component, director, game, Game, Node, UITransform } from 'cc';
+import { CFG, VERSION } from './GameConfig';
 import { BattleField } from './BattleField';
 import { Hud } from './Hud';
 import { Match3Board } from './Match3Board';
-import { mkNode } from './UiUtil';
+import { Save } from './SaveManager';
+import { mkLabel, mkNode } from './UiUtil';
 
 const { ccclass } = _decorator;
 
@@ -18,6 +19,9 @@ export class GameMain extends Component {
     private board!: Match3Board;
     private hud!: Hud;
     private over = false;
+    private wins = 0;
+    private losses = 0;
+    private saveTimer = 0;
 
     start(): void {
         const ut = this.node.getComponent(UITransform);
@@ -44,12 +48,42 @@ export class GameMain extends Component {
             onSkill: (i) => this.trySkill(i),
             onRestart: () => director.loadScene('main'),
         });
+
+        // 读档：有进行中的战斗就自动续玩
+        const data = Save.load();
+        if (data) {
+            this.wins = data.wins;
+            this.losses = data.losses;
+            if (data.battle) {
+                this.energy = data.battle.energy;
+                this.battle.restoreBattle(data.battle);
+            }
+        }
         this.hud.setEnergy(this.energy);
+
+        // 版本号角标
+        const verLabel = mkLabel(hudRoot, `${VERSION} 内测版`, 14, new Color(140, 150, 165, 255));
+        verLabel.node.setPosition(W / 2 - 70, -H / 2 + 16, 0);
+
+        // 退出/切后台时兜底存档
+        game.on(Game.EVENT_HIDE, this.saveNow, this);
     }
 
     update(dt: number): void {
         this.board.update(dt);
         this.battle.update(dt);
+        if (!this.over) {
+            this.saveTimer += dt;
+            if (this.saveTimer >= 5) {
+                this.saveTimer = 0;
+                this.saveNow();
+            }
+        }
+    }
+
+    private saveNow(): void {
+        if (this.over) return;
+        Save.write({ wins: this.wins, losses: this.losses, battle: this.battle.snapshotBattle(this.energy) });
     }
 
     private addEnergy(n: number): void {
@@ -83,6 +117,9 @@ export class GameMain extends Component {
 
     private onGameOver(win: boolean): void {
         this.over = true;
-        this.hud.showResult(win);
+        if (win) this.wins++;
+        else this.losses++;
+        Save.write({ wins: this.wins, losses: this.losses, battle: null }); // 结束后清掉战斗快照，只留战绩
+        this.hud.showResult(win, `总战绩：${this.wins} 胜 ${this.losses} 负`);
     }
 }
