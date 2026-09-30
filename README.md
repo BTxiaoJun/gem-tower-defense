@@ -3,7 +3,7 @@
 独立游戏开发项目：一款围绕"宝石"做文章的塔防游戏。设计思路见 [docs/游戏设计草案.md](docs/游戏设计草案.md)。
 
 **当前状态**：🚧 立项期 —— 工作流已就绪，技术选型待定。
-**远程仓库**：Gitee ✅ 已上线 ｜ GitHub ⏳ 配置中（本机访问 github.com 不稳定，自动值守重试中）
+**远程仓库**：Gitee ✅ ｜ GitHub ✅（均已推送、均已免密）
 
 ## 目录结构
 
@@ -19,41 +19,16 @@
 └── tmp/               # 临时文件（不入库）
 ```
 
-## 首次配置（只做一次）
+## 远程仓库配置（已完成 ✅）
 
-### 1. 告诉 git 你是谁（提交记录会署名）
+| 项 | 内容 |
+|---|---|
+| GitHub | https://github.com/BTxiaoJun/gem-tower-defense |
+| Gitee | https://gitee.com/BTxiaoJun/gem-tower-defense |
+| 提交署名 | `BTxiaoJun <336267444+BTxiaoJun@users.noreply.github.com>`（GitHub 隐私邮箱，不暴露真实邮箱） |
+| 凭据 | 已存入 Windows 凭据管理器，推送免密 |
 
-在新开的命令行窗口里执行（名字邮箱随意，但建议和 GitHub 一致）：
-
-```bat
-git config --global user.name "你的名字"
-git config --global user.email "你的邮箱"
-```
-
-### 2. 创建 GitHub 远程仓库
-
-1. 打开 https://github.com/new
-2. Repository name 填 `gem-tower-defense`（或你喜欢的英文名），选 **Public**（朋友才能直接看），不要勾选任何初始化选项
-3. 点 Create repository，复制给出的仓库地址，形如 `https://github.com/你的用户名/gem-tower-defense.git`
-
-### 3. 创建 Gitee 远程仓库
-
-1. 打开 https://gitee.com/projects/new
-2. 仓库名填 `gem-tower-defense`，选 **开源（公开）**，**不要**勾选"使用 Readme 初始化"
-3. 创建后复制地址，形如 `https://gitee.com/你的用户名/gem-tower-defense.git`
-
-### 4. 在项目文件夹里绑定这两个地址并首次推送
-
-```bat
-cd /d D:\百度网盘\独立游戏宝石塔防
-git remote add github https://github.com/你的用户名/gem-tower-defense.git
-git remote add gitee  https://gitee.com/你的用户名/gem-tower-defense.git
-git push -u github main
-git push -u gitee main
-```
-
-> 首次 push 会弹出浏览器让你登录 GitHub/Gitee，登录一次以后就不用再管。
-> 也可以把上面两个地址发给 AI（ZCode），说"帮我配好远程"，剩下的它来做。
+> 以后远程仓库相关操作全部交给 AI 或直接双击 `同步到远程.bat` 即可，无需再手动配置。
 
 ## 日常怎么用
 
@@ -63,7 +38,7 @@ git push -u gitee main
   ```bat
   git clone https://gitee.com/BTxiaoJun/gem-tower-defense.git
   ```
-  国内推荐用上面的 Gitee 地址（快且稳）；GitHub 地址可用时为 `https://github.com/你的GitHub用户名/gem-tower-defense.git`。
+  国内推荐用上面的 Gitee 地址（快且稳）；GitHub 地址为 `https://github.com/BTxiaoJun/gem-tower-defense.git`。
 - **后悔药**：小反悔用 ZCode 的 `/rewind`；已提交的用 `git revert 提交号`。
 
 ## 环境备忘（这台机器）
