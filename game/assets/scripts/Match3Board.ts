@@ -1,4 +1,4 @@
-import { Color, Graphics, Node, UITransform } from 'cc';
+import { Color, Node, UITransform } from 'cc';
 import { C, CFG } from './GameConfig';
 import { fillRect, gOf, mkNode } from './UiUtil';
 
@@ -73,12 +73,12 @@ export class Match3Board {
 
     private recolor(gem: Gem): void {
         gem.colorIdx = Math.floor(Math.random() * CFG.match.colorCount);
-        gem.node.getComponent(Graphics)!.clear();
+        gOf(gem.node).clear();
         this.drawGem(gem);
     }
 
     private drawGem(gem: Gem): void {
-        const g = gem.node.getComponent(Graphics)!;
+        const g = gOf(gem.node);
         const s = CFG.match.cell * 0.86;
         g.fillColor = C(CFG.gemHexes[gem.colorIdx % CFG.gemHexes.length]);
         g.roundRect(-s / 2, -s / 2, s, s, 9);
