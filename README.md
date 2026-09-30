@@ -46,6 +46,7 @@
 | 工具 | 位置 | 说明 |
 |---|---|---|
 | git 2.56 便携版 | `D:\DevTools\PortableGit` | 已加入用户 PATH，新开窗口敲 `git` 即可用 |
+| Cocos Creator 3.8.8 | `D:\DevTools\CocosCreator\3.8.8` | 双击 `CocosCreator.exe` 启动；首次启动需登录 Cocos 账号 |
 | Python 3.12 | `D:\百度网盘\AI编程\MMD_樱花少女\tools\Python312` | 系统已有 |
 | npm/pip 缓存 | `D:\DevTools\cache\` | 环境变量已永久指向，不占 C 盘 |
 | 凭据管理器 | git 自带 GCM | 首次 push 弹浏览器登录，之后免密 |
