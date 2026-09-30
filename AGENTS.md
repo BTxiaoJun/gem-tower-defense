@@ -58,7 +58,7 @@
 
 ## 七、一次性待办（完成请打勾）
 
-- [ ] 用户把 git 身份改成自己的名字邮箱（见 README"首次配置"）
-- [ ] 创建 GitHub 远程仓库并推送（步骤见 README）
-- [ ] 创建 Gitee 远程仓库并推送（步骤见 README）
+- [x] 用户把 git 身份改成自己的名字邮箱（GitHub 授权通过后由 AI 用 GitHub 身份自动配置）
+- [ ] 创建 GitHub 远程仓库并推送（AI 自动值守中）
+- [x] 创建 Gitee 远程仓库并推送（gitee.com/BTxiaoJun/gem-tower-defense）
 - [ ] 确定游戏技术栈，更新本文件第四节

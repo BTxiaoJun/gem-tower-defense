@@ -3,6 +3,7 @@
 独立游戏开发项目：一款围绕"宝石"做文章的塔防游戏。设计思路见 [docs/游戏设计草案.md](docs/游戏设计草案.md)。
 
 **当前状态**：🚧 立项期 —— 工作流已就绪，技术选型待定。
+**远程仓库**：Gitee ✅ 已上线 ｜ GitHub ⏳ 配置中（本机访问 github.com 不稳定，自动值守重试中）
 
 ## 目录结构
 
@@ -60,8 +61,9 @@ git push -u gitee main
 - **同步给朋友**：双击 `同步到远程.bat`，两个平台同时更新。
 - **朋友蹭项目**：让他装好 [git](https://registry.npmmirror.com/-/binary/git-for-windows/) 后执行：
   ```bat
-  git clone https://gitee.com/你的用户名/gem-tower-defense.git
+  git clone https://gitee.com/BTxiaoJun/gem-tower-defense.git
   ```
+  国内推荐用上面的 Gitee 地址（快且稳）；GitHub 地址可用时为 `https://github.com/你的GitHub用户名/gem-tower-defense.git`。
 - **后悔药**：小反悔用 ZCode 的 `/rewind`；已提交的用 `git revert 提交号`。
 
 ## 环境备忘（这台机器）
