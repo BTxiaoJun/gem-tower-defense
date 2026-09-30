@@ -1,0 +1,33 @@
+# ===== 通用 =====
+tmp/
+*.log
+*.tmp
+.env
+.env.*
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# ===== 依赖与构建产物 =====
+node_modules/
+__pycache__/
+*.pyc
+dist/
+build/
+out/
+
+# ===== 游戏引擎（用到哪个留哪个） =====
+# Godot
+.godot/
+# Unity
+Library/
+Temp/
+obj/
+Logs/
+UserSettings/
+
+# ===== 超大原始素材（>50MB 放这里，不入库） =====
+assets_raw/
+
+# ===== AI 助手的本地会话数据 =====
+.zcode/
