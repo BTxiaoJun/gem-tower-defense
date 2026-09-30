@@ -1,7 +1,7 @@
 import { Color, Graphics, Label, Node } from 'cc';
 import { C, CFG, UnitDef } from './GameConfig';
 import { BattleSnapshot } from './SaveManager';
-import { fillRect, gOf, mkLabel, mkNode } from './UiUtil';
+import { fillRect, gOf, mkLabel, mkNode, setSprite } from './UiUtil';
 
 interface Unit {
     node: Node;
@@ -60,6 +60,11 @@ export class BattleField {
         this.root = root;
         this.onGameOver = onGameOver;
 
+        // 石板地面（最底层）
+        const groundN = mkNode(root, 'ground', W, H);
+        groundN.setPosition(0, 0, 0);
+        setSprite(groundN, 'ground', W, H);
+
         const bx0 = -W / 2 + 50;
         const bx1 = W / 2 - 370; // 右侧留给消消乐面板
         this.playerBaseX = bx0;
@@ -88,7 +93,7 @@ export class BattleField {
         const s = CFG.bases.size;
         const n = mkNode(this.root, `base_${side > 0 ? 'p' : 'e'}${lane}`, s, s);
         n.setPosition(x, y, 0);
-        fillRect(gOf(n), s, s, side > 0 ? C('#3a7bd5') : C('#d53a3a'), 10);
+        setSprite(n, side > 0 ? 'base_blue' : 'base_red', s, s);
         const label = mkLabel(n, '1000', 16, Color.WHITE);
         const barW = s + 16;
         const bar = mkNode(n, 'bar', barW, 8);
@@ -107,8 +112,7 @@ export class BattleField {
     private makeTower(side: 1 | -1, lane: 0 | 1, x: number, y: number): void {
         const n = mkNode(this.root, `tower_${side > 0 ? 'p' : 'e'}${lane}`, 36, 36);
         n.setPosition(x, y, 0);
-        fillRect(gOf(n), 36, 36, side > 0 ? C('#2e5d9e') : C('#9e2e2e'), 6);
-        fillRect(gOf(n), 14, 14, Color.WHITE, 3);
+        setSprite(n, side > 0 ? 'tower_blue' : 'tower_red', 40, 40);
         this.towers.push({ node: n, side, lane, x, y, cd: Math.random() * CFG.towers.cd });
     }
 
@@ -124,17 +128,10 @@ export class BattleField {
 
     private createUnit(side: 1 | -1, defIdx: number, lane: 0 | 1, x: number, y: number, hp: number, rageT: number): void {
         const def = CFG.units[defIdx];
-        const n = mkNode(this.root, 'unit', def.r * 2, def.r * 2);
+        const n = mkNode(this.root, 'unit', def.r * 2 + 12, def.r * 2 + 12);
         n.setPosition(x, y, 0);
-        const g = gOf(n);
-        g.fillColor = C(def.hex);
-        g.circle(0, 0, def.r);
-        g.fill();
-        g.lineWidth = 3;
-        g.strokeColor = side > 0 ? C('#1c3d63') : C('#5e1c1c');
-        g.circle(0, 0, def.r);
-        g.stroke();
-        mkLabel(n, def.name, 11, new Color(20, 20, 20, 255)).node.setPosition(0, -def.r - 9, 0);
+        setSprite(n, `unit_${defIdx}_${side > 0 ? 'p' : 'e'}`, def.r * 2 + 12, def.r * 2 + 12);
+        mkLabel(n, def.name, 11, new Color(235, 238, 245, 255)).node.setPosition(0, -def.r - 11, 0);
 
         this.units.push({
             node: n, def, defIdx, side, lane, hp, maxHp: def.hp,
@@ -197,6 +194,15 @@ export class BattleField {
         for (const u of this.units) {
             if (u.alive && u.side === 1) u.rageT = CFG.skills.rage.duration;
         }
+    }
+
+    /** 面板顶部总览用：双方平均基地血量比 */
+    factionHp(): { p: number, e: number } {
+        const avg = (side: 1 | -1): number => {
+            const bs = this.bases.filter((b) => b.side === side);
+            return bs.reduce((s, b) => s + Math.max(0, b.hp / b.maxHp), 0) / bs.length;
+        };
+        return { p: avg(1), e: avg(-1) };
     }
 
     update(dt: number): void {

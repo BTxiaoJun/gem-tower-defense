@@ -1,7 +1,7 @@
 import { Color } from 'cc';
 
 /** 当前游戏版本号，随每次发布更新（与 git tag 一致） */
-export const VERSION = 'v0.0.2';
+export const VERSION = 'v0.1.0';
 
 /** M1 玩法模板的全部可调数值都集中在这里，试玩后改这里即可 */
 export const CFG = {

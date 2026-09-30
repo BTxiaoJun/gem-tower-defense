@@ -4,7 +4,7 @@ import { BattleField } from './BattleField';
 import { Hud } from './Hud';
 import { Match3Board } from './Match3Board';
 import { Save } from './SaveManager';
-import { mkLabel, mkNode } from './UiUtil';
+import { mkLabel, mkNode, setSprite } from './UiUtil';
 
 const { ccclass } = _decorator;
 
@@ -33,11 +33,16 @@ export class GameMain extends Component {
         bfRoot.setPosition(0, 0, 0);
         this.battle = new BattleField(bfRoot, W, H, (win) => this.onGameOver(win));
 
+        // 右侧金属面板背景（压在战场之上、控件之下）
+        const panelBg = mkNode(this.node, 'panelbg', 360, H);
+        panelBg.setPosition(W / 2 - 180, 0, 0);
+        setSprite(panelBg, 'panel', 360, H);
+
         // 右侧消消乐面板
         const panelX = W / 2 - 180;
         const boardH = CFG.match.rows * CFG.match.cell + 16;
         const boardRoot = mkNode(this.node, 'match3', 10, 10);
-        boardRoot.setPosition(panelX, H / 2 - boardH / 2 - 24, 0);
+        boardRoot.setPosition(panelX, H / 2 - boardH / 2 - 54, 0);
         this.board = new Match3Board(boardRoot, (n) => this.addEnergy(n));
 
         // HUD
@@ -72,6 +77,8 @@ export class GameMain extends Component {
     update(dt: number): void {
         this.board.update(dt);
         this.battle.update(dt);
+        const hp = this.battle.factionHp();
+        this.hud.setFactionHp(hp.p, hp.e);
         if (!this.over) {
             this.saveTimer += dt;
             if (this.saveTimer >= 5) {

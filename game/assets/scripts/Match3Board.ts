@@ -1,6 +1,8 @@
 import { Color, Node, UITransform } from 'cc';
-import { C, CFG } from './GameConfig';
-import { fillRect, gOf, mkNode } from './UiUtil';
+import { CFG } from './GameConfig';
+import { fillRect, gOf, mkNode, setSprite } from './UiUtil';
+
+const GEM_FILES = ['red', 'blue', 'green', 'yellow'];
 
 interface Gem {
     node: Node;
@@ -43,11 +45,7 @@ export class Match3Board {
 
         // 选中高亮圈
         this.selRing = mkNode(this.gemsRoot, 'sel', m.cell, m.cell);
-        const g = gOf(this.selRing);
-        g.lineWidth = 4;
-        g.strokeColor = Color.WHITE;
-        g.roundRect(-m.cell * 0.45, -m.cell * 0.45, m.cell * 0.9, m.cell * 0.9, 8);
-        g.stroke();
+        setSprite(this.selRing, 'sel_ring', m.cell * 0.98, m.cell * 0.98);
         this.selRing.active = false;
 
         // 开局避免已有三连
@@ -73,19 +71,12 @@ export class Match3Board {
 
     private recolor(gem: Gem): void {
         gem.colorIdx = Math.floor(Math.random() * CFG.match.colorCount);
-        gOf(gem.node).clear();
         this.drawGem(gem);
     }
 
     private drawGem(gem: Gem): void {
-        const g = gOf(gem.node);
-        const s = CFG.match.cell * 0.86;
-        g.fillColor = C(CFG.gemHexes[gem.colorIdx % CFG.gemHexes.length]);
-        g.roundRect(-s / 2, -s / 2, s, s, 9);
-        g.fill();
-        g.fillColor = new Color(255, 255, 255, 60);
-        g.roundRect(-s / 2 + 4, s / 2 - 10, s - 8, 6, 3);
-        g.fill();
+        setSprite(gem.node, 'gem_' + GEM_FILES[gem.colorIdx % GEM_FILES.length],
+            CFG.match.cell * 0.92, CFG.match.cell * 0.92);
     }
 
     private place(gem: Gem): void {

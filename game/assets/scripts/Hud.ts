@@ -1,6 +1,6 @@
 import { BlockInputEvents, Color, Graphics, Label, Node, UIOpacity } from 'cc';
 import { C, CFG } from './GameConfig';
-import { fillRect, gOf, mkButton, mkLabel, mkNode } from './UiUtil';
+import { fillRect, gOf, mkButton, mkLabel, mkNode, setSprite } from './UiUtil';
 
 interface HudCallbacks {
     onSummon: (idx: number) => void;
@@ -10,13 +10,15 @@ interface HudCallbacks {
 
 /** HUD：能量条、召唤按钮、技能按钮、结算弹层 */
 export class Hud {
-    private barFill!: Graphics;
     private barLabel!: Label;
+    private fillNode!: Node;
     private summonBtns: Node[] = [];
     private skillBtns: Node[] = [];
     private resultRoot!: Node;
     private resultLabel!: Label;
     private statsLabel!: Label;
+    private fP!: Graphics;
+    private fE!: Graphics;
     private cb: HudCallbacks;
     private energy = 0;
 
@@ -28,19 +30,35 @@ export class Hud {
         // 能量条（在消消乐面板下方）
         const barW = CFG.match.cols * CFG.match.cell + 16;
         const barRoot = mkNode(root, 'energybar', barW, 30);
-        barRoot.setPosition(panelX, H / 2 - boardH - 44, 0);
-        fillRect(gOf(barRoot), barW, 30, new Color(30, 34, 44, 235), 8);
+        barRoot.setPosition(panelX, H / 2 - boardH - 74, 0);
+        setSprite(barRoot, 'bar_slot', barW, 30);
         const fillN = mkNode(barRoot, 'fill', barW - 8, 12);
         fillN.setPosition(0, -3, 0);
-        this.barFill = gOf(fillN);
+        setSprite(fillN, 'bar_fill', barW - 8, 12);
+        this.fillNode = fillN;
         this.barLabel = mkLabel(barRoot, '能量 0', 15, Color.WHITE);
         this.barLabel.node.setPosition(0, 2, 0);
+
+        // 顶部双方基地血量总览（在金属面板最上方）
+        const mkFbar = (cx: number, text: string, hex: string): Graphics => {
+            const l = mkLabel(root, text, 13, C('#c8d2e0'));
+            l.node.setPosition(cx, H / 2 - 16, 0);
+            const bar = mkNode(root, 'fbar', 150, 12);
+            bar.setPosition(cx, H / 2 - 33, 0);
+            fillRect(gOf(bar), 150, 12, new Color(0, 0, 0, 170), 5);
+            const f = mkNode(bar, 'fill', 146, 8);
+            const fg = gOf(f);
+            fillRect(fg, 146, 8, C(hex), 3);
+            return fg;
+        };
+        this.fP = mkFbar(panelX - 85, '我方基地', '#5dff70');
+        this.fE = mkFbar(panelX + 85, '敌方基地', '#ff5a5a');
 
         // 底部按钮条
         const by = -H / 2 + 52;
         const names = CFG.units.map((u) => `${u.name}\n${u.cost}`);
         for (let i = 0; i < names.length; i++) {
-            const btn = mkButton(root, 92, 58, names[i], '#37517a');
+            const btn = mkButton(root, 92, 58, names[i], 'btn_unit');
             btn.setPosition(-W / 2 + 70 + i * 108, by, 0);
             btn.addComponent(UIOpacity);
             btn.on(Node.EventType.TOUCH_END, () => this.cb.onSummon(i));
@@ -48,7 +66,7 @@ export class Hud {
         }
         const skillDefs = [CFG.skills.fireball, CFG.skills.rage];
         for (let i = 0; i < skillDefs.length; i++) {
-            const btn = mkButton(root, 92, 58, `${skillDefs[i].name}\n${skillDefs[i].cost}`, '#7a3751');
+            const btn = mkButton(root, 92, 58, `${skillDefs[i].name}\n${skillDefs[i].cost}`, 'btn_skill');
             btn.setPosition(-W / 2 + 430 + i * 108, by, 0);
             btn.addComponent(UIOpacity);
             btn.on(Node.EventType.TOUCH_END, () => this.cb.onSkill(i));
@@ -73,8 +91,7 @@ export class Hud {
         this.energy = v;
         const barW = CFG.match.cols * CFG.match.cell + 16;
         const ratio = Math.min(1, v / CFG.energyMax);
-        this.barFill.clear();
-        fillRect(this.barFill, Math.max(1, (barW - 8) * ratio), 12, ratio > 0.8 ? C('#ffd85a') : C('#5ab0ff'), 5);
+        this.fillNode.setContentSize(Math.max(1, (barW - 8) * ratio), 12);
         this.barLabel.string = `能量 ${Math.floor(v)} / ${CFG.energyMax}`;
         // 按钮可用状态
         for (let i = 0; i < this.summonBtns.length; i++) {
@@ -82,6 +99,16 @@ export class Hud {
         }
         this.setBtnEnabled(this.skillBtns[0], v >= CFG.skills.fireball.cost);
         this.setBtnEnabled(this.skillBtns[1], v >= CFG.skills.rage.cost);
+    }
+
+    /** 面板顶部双方基地血量总览 */
+    setFactionHp(p: number, e: number): void {
+        this.drawF(this.fP, p);
+        this.drawF(this.fE, e);
+    }
+
+    private drawF(g: Graphics, ratio: number): void {
+        g.node.setContentSize(Math.max(1, 146 * Math.max(0, Math.min(1, ratio))), 8);
     }
 
     private setBtnEnabled(btn: Node, on: boolean): void {
